@@ -7,16 +7,16 @@
 #include "utils.h"
 
 struct entry_s {
-	char *key;
-	void *value;
-	struct entry_s *next;
+    char *key;
+    void *value;
+    struct entry_s *next;
 };
 
 typedef struct entry_s entry_t;
 
 struct hashtable_s {
-	int size;
-	struct entry_s **table;	
+    int size;
+    struct entry_s **table;
 };
 
 typedef struct hashtable_s hashtable_t;
@@ -28,32 +28,32 @@ static entry_t *ht_newpair(char *key, void *value, size_t size);
 /* Create a new hashtable. */
 void *ht_create(int size) 
 {
-	int i;
-	hashtable_t *hashtable = NULL;
+    int i;
+    hashtable_t *hashtable = NULL;
 
-	if (size < 1) {
+    if (size < 1) {
         return NULL;
     }
 
-	/* Allocate the table itself. */
+    /* Allocate the table itself. */
     hashtable = (hashtable_t *) malloc(sizeof(hashtable_t));
     if (hashtable == NULL) {
         goto bail;
     }
 
-	/* Allocate pointers to the head nodes. */
+    /* Allocate pointers to the head nodes. */
     hashtable->table = (entry_t**) malloc(sizeof(entry_t) * size);
     if (hashtable->table == NULL) {
-		return NULL;
-	}
+        return NULL;
+    }
 
-	for( i = 0; i < size; i++ ) {
-		hashtable->table[i] = NULL;
-	}
+    for( i = 0; i < size; i++ ) {
+        hashtable->table[i] = NULL;
+    }
 
-	hashtable->size = size;
+    hashtable->size = size;
 
-	return (void *) hashtable;
+    return (void *) hashtable;
 bail:
     sfree(hashtable->table);
     sfree(hashtable);
@@ -71,36 +71,36 @@ bail:
 void ht_set(void *context, char *key, void *value, size_t size)
 {
     hashtable_t *hashtable;
-	int bin = 0;
-	entry_t *newpair = NULL;
-	entry_t *next = NULL;
-	entry_t *last = NULL;
+    int bin = 0;
+    entry_t *newpair = NULL;
+    entry_t *next = NULL;
+    entry_t *last = NULL;
 
     hashtable = (hashtable_t *) context;
-	bin = ht_hash(hashtable, key);
-	next = hashtable->table[bin];
+    bin = ht_hash(hashtable, key);
+    next = hashtable->table[bin];
 
-	while (next != NULL && next->key != NULL && strcmp(key, next->key) > 0) {
-		last = next;
-		next = next->next;
-	}
+    while (next != NULL && next->key != NULL && strcmp(key, next->key) > 0) {
+        last = next;
+        next = next->next;
+    }
 
-	if (next != NULL && next->key != NULL && strcmp(key, next->key) == 0) {
-		free(next->value);
+    if (next != NULL && next->key != NULL && strcmp(key, next->key) == 0) {
+        free(next->value);
         next->value = (void *) malloc(size + 1);
         memcpy(next->value, value, size);
-	} else {
-		newpair = ht_newpair(key, value, size);
-		if (next == hashtable->table[bin]) {
-			newpair->next = next;
-			hashtable->table[ bin ] = newpair;
-		} else if (next == NULL) {
-			last->next = newpair;
-		} else  {
-			newpair->next = next;
-			last->next = newpair;
-		}
-	}
+    } else {
+        newpair = ht_newpair(key, value, size);
+        if (next == hashtable->table[bin]) {
+            newpair->next = next;
+            hashtable->table[ bin ] = newpair;
+        } else if (next == NULL) {
+            last->next = newpair;
+        } else  {
+            newpair->next = next;
+            last->next = newpair;
+        }
+    }
 }
 
 /**
@@ -114,23 +114,23 @@ void ht_set(void *context, char *key, void *value, size_t size)
 void *ht_get(void *context, char *key)
 {
     hashtable_t *hashtable;
-	int bin = 0;
-	entry_t *pair;
+    int bin = 0;
+    entry_t *pair;
 
     hashtable = (hashtable_t *) context;
 
-	bin = ht_hash(hashtable, key);
+    bin = ht_hash(hashtable, key);
 
-	pair = hashtable->table[bin];
-	while (pair != NULL && pair->key != NULL && strcmp(key, pair->key) > 0) {
-		pair = pair->next;
-	}
+    pair = hashtable->table[bin];
+    while (pair != NULL && pair->key != NULL && strcmp(key, pair->key) > 0) {
+        pair = pair->next;
+    }
 
-	if (pair == NULL || pair->key == NULL || strcmp(key, pair->key) != 0) {
-		return NULL;
-	} else {
-		return pair->value;
-	}
+    if (pair == NULL || pair->key == NULL || strcmp(key, pair->key) != 0) {
+        return NULL;
+    } else {
+        return pair->value;
+    }
 }
 
 /**
@@ -143,17 +143,17 @@ void *ht_get(void *context, char *key)
  */
 static int ht_hash(hashtable_t *hashtable, char *key)
 {
-	unsigned long int hashval;
-	int i = 0;
+    unsigned long int hashval;
+    int i = 0;
 
-	/* Convert our string to an integer */
-	while (hashval < ULONG_MAX && i < strlen(key)) {
-		hashval = hashval << 8;
-		hashval += key[i];
-		i++;
-	}
+    /* Convert our string to an integer */
+    while (hashval < ULONG_MAX && i < strlen(key)) {
+        hashval = hashval << 8;
+        hashval += key[i];
+        i++;
+    }
 
-	return hashval % hashtable->size;
+    return hashval % hashtable->size;
 }
 
 /**
@@ -167,7 +167,7 @@ static int ht_hash(hashtable_t *hashtable, char *key)
  */
 static entry_t *ht_newpair(char *key, void *value, size_t size)
 {
-	entry_t *newpair;
+    entry_t *newpair;
 
     newpair = (entry_t *) malloc(sizeof(entry_t));
     if (newpair == NULL) {
@@ -185,9 +185,9 @@ static entry_t *ht_newpair(char *key, void *value, size_t size)
     }
 
     memcpy(newpair->value, value, size);
-	newpair->next = NULL;
+    newpair->next = NULL;
 
-	return newpair;
+    return newpair;
 bail:
     return NULL;
 }
@@ -195,18 +195,18 @@ bail:
 #ifdef TEST_HASH
 int main(int argc, char **argv)
 {
-	void *hashtable = ht_create(65536);
+    void *hashtable = ht_create(65536);
 
-	ht_set(hashtable, "key1", (void *) "inky", sizeof("inky"));
-	ht_set(hashtable, "key2", (void *) "pinky", sizeof("pinky"));
-	ht_set(hashtable, "key3", (void *) "blinky", sizeof("blinky"));
-	ht_set(hashtable, "key4", (void *) "floyd", sizeof("floyd"));
+    ht_set(hashtable, "key1", (void *) "inky", sizeof("inky"));
+    ht_set(hashtable, "key2", (void *) "pinky", sizeof("pinky"));
+    ht_set(hashtable, "key3", (void *) "blinky", sizeof("blinky"));
+    ht_set(hashtable, "key4", (void *) "floyd", sizeof("floyd"));
 
-	printf("%s\n", (char *) ht_get(hashtable, "key1"));
-	printf("%s\n", (char *) ht_get(hashtable, "key2"));
-	printf("%s\n", (char *) ht_get(hashtable, "key3"));
-	printf("%s\n", (char *) ht_get(hashtable, "key4"));
+    printf("%s\n", (char *) ht_get(hashtable, "key1"));
+    printf("%s\n", (char *) ht_get(hashtable, "key2"));
+    printf("%s\n", (char *) ht_get(hashtable, "key3"));
+    printf("%s\n", (char *) ht_get(hashtable, "key4"));
 
-	return 0;
+    return 0;
 }
 #endif
