@@ -11,21 +11,24 @@ struct entry_s {
     void *value;
     struct entry_s *next;
 };
-
 typedef struct entry_s entry_t;
 
 struct hashtable_s {
     int size;
     struct entry_s **table;
 };
-
 typedef struct hashtable_s hashtable_t;
 
 static int ht_hash(hashtable_t *hashtable, char *key);
-
 static entry_t *ht_newpair(char *key, void *value, size_t size);
 
-/* Create a new hashtable. */
+/**
+ * @brief Create a new hashtable
+ *
+ * @param[in] size
+ *
+ * @return
+ */
 void *ht_create(int size) 
 {
     int i;
@@ -134,7 +137,7 @@ void *ht_get(void *context, char *key)
 }
 
 /**
- * @brief Hash a string for a particular hash table.
+ * @brief Hash a string for a particular hash table
  *
  * @param[in] hashtable
  * @param[in] key
